@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="stb_image.cpp">
       <Filter>external</Filter>
     </ClCompile>
@@ -29,12 +28,11 @@
     <ClCompile Include="..\imgui\imgui_widgets.cpp">
       <Filter>external\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="mesh.h" />
-    <ClInclude Include="model.h" />
-    <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h">
       <Filter>external</Filter>
     </ClInclude>
@@ -65,6 +63,18 @@
     <ClInclude Include="..\imgui\imstb_truetype.h">
       <Filter>external\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="kernels">
@@ -78,6 +88,12 @@
     </Filter>
     <Filter Include="external\imgui">
       <UniqueIdentifier>{f85c3c06-6a0f-4fef-86d8-c36390ba4eb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="headers">
+      <UniqueIdentifier>{36dfe90d-4582-4799-a2f8-f6ded679bf41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{20ff3b04-a87d-41b3-82b9-5edf98db55d3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
