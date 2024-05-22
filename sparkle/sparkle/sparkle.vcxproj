@@ -49,7 +49,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)glad\include;$(SolutionDir)imgui;$(SolutionDir)glfw-3.4.bin.WIN64\include;$(SolutionDir)glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glad\include;$(SolutionDir)imgui;$(SolutionDir)glfw-3.4.bin.WIN64\include;$(SolutionDir)glm;$(SolutionDir)fmt/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -69,7 +69,7 @@
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)glad\include;$(SolutionDir)imgui;$(SolutionDir)glfw-3.4.bin.WIN64\include;$(SolutionDir)glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glad\include;$(SolutionDir)imgui;$(SolutionDir)glfw-3.4.bin.WIN64\include;$(SolutionDir)glm;$(SolutionDir)fmt/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -88,6 +88,9 @@
     <CudaCompile Include="kernel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\fmt\src\fmt.cc" />
+    <ClCompile Include="..\fmt\src\format.cc" />
+    <ClCompile Include="..\fmt\src\os.cc" />
     <ClCompile Include="..\imgui\imgui.cpp" />
     <ClCompile Include="..\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\imgui\imgui_draw.cpp" />
@@ -100,6 +103,20 @@
     <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\fmt\include\fmt\args.h" />
+    <ClInclude Include="..\fmt\include\fmt\base.h" />
+    <ClInclude Include="..\fmt\include\fmt\chrono.h" />
+    <ClInclude Include="..\fmt\include\fmt\color.h" />
+    <ClInclude Include="..\fmt\include\fmt\compile.h" />
+    <ClInclude Include="..\fmt\include\fmt\core.h" />
+    <ClInclude Include="..\fmt\include\fmt\format-inl.h" />
+    <ClInclude Include="..\fmt\include\fmt\format.h" />
+    <ClInclude Include="..\fmt\include\fmt\os.h" />
+    <ClInclude Include="..\fmt\include\fmt\ostream.h" />
+    <ClInclude Include="..\fmt\include\fmt\printf.h" />
+    <ClInclude Include="..\fmt\include\fmt\ranges.h" />
+    <ClInclude Include="..\fmt\include\fmt\std.h" />
+    <ClInclude Include="..\fmt\include\fmt\xchar.h" />
     <ClInclude Include="..\imgui\imconfig.h" />
     <ClInclude Include="..\imgui\imgui.h" />
     <ClInclude Include="..\imgui\imgui_impl_glfw.h" />

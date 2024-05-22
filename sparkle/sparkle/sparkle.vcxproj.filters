@@ -31,6 +31,15 @@
     <ClCompile Include="main.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="..\fmt\src\fmt.cc">
+      <Filter>external\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fmt\src\format.cc">
+      <Filter>external\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fmt\src\os.cc">
+      <Filter>external\fmt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -75,6 +84,48 @@
     <ClInclude Include="shader.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\args.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\base.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\chrono.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\color.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\compile.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\core.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\format.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\format-inl.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\os.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\ostream.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\printf.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\ranges.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\std.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fmt\include\fmt\xchar.h">
+      <Filter>external\fmt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="kernels">
@@ -94,6 +145,9 @@
     </Filter>
     <Filter Include="source">
       <UniqueIdentifier>{20ff3b04-a87d-41b3-82b9-5edf98db55d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\fmt">
+      <UniqueIdentifier>{07994c98-e988-4688-8559-7181a1c8fe1e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

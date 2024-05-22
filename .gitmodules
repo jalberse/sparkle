@@ -1,0 +1,3 @@
+[submodule "sparkle/fmt"]
+	path = sparkle/fmt
+	url = https://github.com/fmtlib/fmt.git
