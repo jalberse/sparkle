@@ -1,3 +1,6 @@
 [submodule "sparkle/fmt"]
 	path = sparkle/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "sparkle/vcpkg"]
+	path = sparkle/vcpkg
+	url = https://github.com/microsoft/vcpkg.git

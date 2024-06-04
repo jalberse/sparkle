@@ -31,14 +31,35 @@
     <ClCompile Include="main.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\fmt\src\fmt.cc">
-      <Filter>external\fmt</Filter>
-    </ClCompile>
     <ClCompile Include="..\fmt\src\format.cc">
       <Filter>external\fmt</Filter>
     </ClCompile>
-    <ClCompile Include="..\fmt\src\os.cc">
-      <Filter>external\fmt</Filter>
+    <ClCompile Include="MeshRenderer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInstance.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="SpEngine.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,31 +93,19 @@
     <ClInclude Include="..\imgui\imstb_truetype.h">
       <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
+    <ClInclude Include="Camera.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="mesh.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="model.h">
+    <ClInclude Include="Mesh.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="shader.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\args.h">
-      <Filter>external\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\base.h">
-      <Filter>external\fmt</Filter>
-    </ClInclude>
     <ClInclude Include="..\fmt\include\fmt\chrono.h">
       <Filter>external\fmt</Filter>
     </ClInclude>
     <ClInclude Include="..\fmt\include\fmt\color.h">
-      <Filter>external\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\compile.h">
       <Filter>external\fmt</Filter>
     </ClInclude>
     <ClInclude Include="..\fmt\include\fmt\core.h">
@@ -108,23 +117,62 @@
     <ClInclude Include="..\fmt\include\fmt\format-inl.h">
       <Filter>external\fmt</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\os.h">
-      <Filter>external\fmt</Filter>
+    <ClInclude Include="Component.h">
+      <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\ostream.h">
-      <Filter>external\fmt</Filter>
+    <ClInclude Include="utils.h">
+      <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\printf.h">
-      <Filter>external\fmt</Filter>
+    <ClInclude Include="Transform.h">
+      <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\ranges.h">
-      <Filter>external\fmt</Filter>
+    <ClInclude Include="MeshRenderer.h">
+      <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\std.h">
-      <Filter>external\fmt</Filter>
+    <ClInclude Include="Actor.h">
+      <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\xchar.h">
-      <Filter>external\fmt</Filter>
+    <ClInclude Include="Material.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialProperty.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInstance.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPipeline.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SpEngine.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -156,10 +204,22 @@
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.frag">
+    <None Include="..\Assets\Shader\_Default.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="default.vert">
+    <None Include="..\Assets\Shader\_Default.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\Assets\Shader\_ShadowDepth.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\Assets\Shader\_ShadowDepth.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\Assets\Shader\UnlitWhite.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\Assets\Shader\UnlitWhite.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

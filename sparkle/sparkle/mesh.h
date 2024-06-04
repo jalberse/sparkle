@@ -1,98 +1,217 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <glad/glad.h> // include glad to get all the required OpenGL headers
 
-#include "glm.hpp"
-#include "gtc/matrix_transform.hpp"
+#include <fmt/core.h>
+#include <glm.hpp>
 
-#include <string>
 #include <vector>
 
-#include "shader.h"
+namespace sparkle
+{
 
-struct Vertex {
-	glm::vec3 Position;
-	glm::vec3 Normal;
-	glm::vec2 TexCoords;
-};
-
-struct Texture {
-	unsigned int id;
-	std::string type;
-	std::string path;
-};
-
-class Mesh {
+class Mesh
+{
 public:
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
-	std::vector<Texture> textures;
+	/// <summary>
+	/// Construct the Mesh from the given vertices and indices, first converting to GLM types.
+	/// </summary>
+	/// <param name="attributeSizes"></param>
+	/// <param name="packedVertices"></param>
+	/// <param name="indices"></param>
+	Mesh(std::vector<unsigned int>&& attributeSizes,
+		std::vector<float>&& packedVertices,
+		std::vector<unsigned int>&& indices)
+	{
+		unsigned int stride = 0;
+		for (unsigned int i = 0; i < attributeSizes.size(); i++)
+		{
+			stride += attributeSizes[i];
+		}
+		unsigned int numVertices = static_cast<unsigned int>(packedVertices.size()) / stride;
 
-	Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, std::vector<Texture>&& textures);
-	void Draw(Shader& shader);
+		for (unsigned int i = 0; i < numVertices; i++)
+		{
+			unsigned int baseV = stride * i;
+			unsigned int baseN = (stride >= 6) ? baseV + 3 : baseV;
+			unsigned int baseT = baseN + 3;
+
+			m_positions.push_back(glm::vec3(packedVertices[baseV + 0], packedVertices[baseV + 1], packedVertices[baseV + 2]));
+			if (stride >= 6)
+			{
+				m_normals.push_back(glm::vec3(packedVertices[baseN + 0], packedVertices[baseN + 1], packedVertices[baseN + 2]));
+			}
+			m_texCoords.push_back(glm::vec2(packedVertices[baseT + 0], packedVertices[baseT + 1]));
+		}
+		Initialize(m_positions, m_normals, m_texCoords, indices, attributeSizes);
+	}
+
+	Mesh(const std::vector<glm::vec3>&& vertices,
+		const std::vector<glm::vec3>&& normals = std::vector<glm::vec3>(),
+		const std::vector<glm::vec2>&& texCoords = std::vector<glm::vec2>(),
+		const std::vector<unsigned int>&& indices = std::vector<unsigned int>())
+	{
+		Initialize(vertices, normals, texCoords, indices, std::vector<unsigned int>());
+	}
+
+	Mesh(const Mesh&) = delete;
+
+	~Mesh()
+	{
+		if (m_EBO > 0)
+		{
+			glDeleteBuffers(1, &m_EBO);
+		}
+		if (!m_VBOs.empty())
+		{
+			glDeleteBuffers((GLsizei)m_VBOs.size(), m_VBOs.data());
+		}
+		if (m_VAO > 0)
+		{
+			glDeleteVertexArrays(1, &m_VAO);
+		}
+	}
+
+	unsigned int VAO() const
+	{
+		if (m_VAO == 0)
+		{
+			fmt::print("Error(Mesh): Access VAO of 0 (possibly uninitialized");
+		}
+		return m_VAO;
+	}
+
+	bool useIndices() const
+	{
+		return m_indices.size() > 0;
+	}
+
+	unsigned int drawCount() const
+	{
+		if (useIndices())
+		{
+			return static_cast<unsigned int>(m_indices.size());
+		}
+		else {
+			return static_cast<unsigned int>(m_positions.size());
+		}
+	}
+
+	const std::vector<unsigned int>& indices() const
+	{
+		return m_indices;
+	}
+
+	const GLuint verticesVBO() const
+	{
+		return m_VBOs[0];
+	}
+
+	const GLuint normalsVBO() const
+	{
+		return m_VBOs[1];
+	}
+
+	void SetVerticesAndNormals(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals)
+	{
+		m_positions = vertices;
+		m_normals = normals;
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBOs[0]);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBOs[1]);
+		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_DYNAMIC_DRAW);
+	}
+
+	/// <summary>
+	/// Allocates a VBO and returns the handle.
+	/// </summary>
+	/// <param name="floatCount">The number of floats per vertex attribute; e.g. 3 for 3D points.</param>
+	/// <param name="instanceAttribute"></param>
+	/// <returns></returns>
+	GLuint AllocateVBO(unsigned int floatCount, bool instanceAttribute = false)
+	{
+		GLuint VBO;
+		glBindVertexArray(m_VAO);
+		glGenBuffers(1, &VBO);
+		m_VBOs.push_back(VBO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+		int index = static_cast<int>(m_VBOs.size()) - 1;
+		glEnableVertexAttribArray(index);
+		glVertexAttribPointer(index, floatCount, GL_FLOAT, GL_FALSE, floatCount * sizeof(float), (void*)0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		if (instanceAttribute)
+		{
+			glVertexAttribDivisor(index, 1);
+		}
+
+		return VBO;
+	}
+
 private:
-	unsigned int VAO, VBO, EBO;
+	std::vector<glm::vec3> m_positions;
+	std::vector<glm::vec3> m_normals;
+	std::vector<glm::vec2> m_texCoords;
+	std::vector<unsigned int> m_indices;
 
-	void setupMesh();
+	GLuint m_VAO = 0;
+	GLuint m_EBO = 0;
+	// TODO Should we instead store vertex, normal, and texCoords VBOs as separate members?
+	// Right now, this is populated by successive calls to AllocateVBO() - missing either normals or
+	// texCoords could result in m_VBOs[1] referring to one or the other, which could be confusing.
+	std::vector<GLuint> m_VBOs;
+
+	void Initialize(
+		const std::vector<glm::vec3>& vertices,
+		const std::vector<glm::vec3>& normals,
+		const std::vector<glm::vec2>& texCoords,
+		const std::vector<unsigned int>& indices,
+		const std::vector<unsigned int>& attributeSizes
+	)
+	{
+		m_positions = vertices;
+		m_normals = normals;
+		m_texCoords = texCoords;
+		m_indices = indices;
+
+		// Bind Vertex Array Object
+		glGenVertexArrays(1, &m_VAO);
+		glBindVertexArray(m_VAO);
+
+		// Copy our arrays into OpenGL buffers
+		if (!m_positions.empty())
+		{
+			const GLuint vbo = AllocateVBO(3);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, m_positions.size() * sizeof(glm::vec3), m_positions.data(), GL_STATIC_DRAW);
+		}
+		if (!m_normals.empty())
+		{
+			const GLuint vbo = AllocateVBO(3);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, m_normals.size() * sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW);
+		}
+		if (!m_texCoords.empty())
+		{
+			const GLuint vbo = AllocateVBO(2);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, m_texCoords.size() * sizeof(glm::vec2), m_texCoords.data(), GL_STATIC_DRAW);
+		}
+		// Unbind to be safe
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// Copy our index array in an element buffer
+		if (useIndices())
+		{
+			glGenBuffers(1, &m_EBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+		}
+		// Unbind to be safe
+		glBindVertexArray(0);
+	}
 };
 
-Mesh::Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, std::vector<Texture>&& textures)
-	: vertices(vertices), indices(indices), textures(textures)
-{
-	setupMesh();
-}
-
-void Mesh::setupMesh()
-{
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-	// Vertex positions
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	// Vertex normals
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
-	// Vertex texture coords
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
-
-	glBindVertexArray(0);
-}
-
-void Mesh::Draw(Shader& shader)
-{
-	unsigned int diffuseNr = 1;
-	unsigned int specularNr = 1;
-	for (unsigned int i = 0; i < textures.size(); i++)
-	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		std::string number;
-		std::string name = textures[i].type;
-		if (name == "texture_diffuse")
-		{
-			number = std::to_string(diffuseNr++);
-		}
-		else if (name == "texture_specular")
-		{
-			number = std::to_string(specularNr++);
-		}
-		shader.setInt(("material." + name + number).c_str(), i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
-	}
-	glActiveTexture(GL_TEXTURE0);
-
-	// draw mesh
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
 }
