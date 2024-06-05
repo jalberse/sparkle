@@ -151,12 +151,12 @@
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Assets\Shader\UnlitWhite.frag" />
-    <None Include="..\Assets\Shader\UnlitWhite.vert" />
-    <None Include="..\Assets\Shader\_Default.frag" />
-    <None Include="..\Assets\Shader\_Default.vert" />
-    <None Include="..\Assets\Shader\_ShadowDepth.frag" />
-    <None Include="..\Assets\Shader\_ShadowDepth.vert" />
+    <None Include="Assets\Shader\UnlitWhite.frag" />
+    <None Include="Assets\Shader\UnlitWhite.vert" />
+    <None Include="Assets\Shader\_Default.frag" />
+    <None Include="Assets\Shader\_Default.vert" />
+    <None Include="Assets\Shader\_ShadowDepth.frag" />
+    <None Include="Assets\Shader\_ShadowDepth.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

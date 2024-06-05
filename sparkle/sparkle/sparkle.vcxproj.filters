@@ -204,22 +204,22 @@
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Assets\Shader\_Default.frag">
+    <None Include="Assets\Shader\_Default.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\Assets\Shader\_Default.vert">
+    <None Include="Assets\Shader\_Default.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\Assets\Shader\_ShadowDepth.frag">
+    <None Include="Assets\Shader\_ShadowDepth.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\Assets\Shader\_ShadowDepth.vert">
+    <None Include="Assets\Shader\_ShadowDepth.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\Assets\Shader\UnlitWhite.frag">
+    <None Include="Assets\Shader\UnlitWhite.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\Assets\Shader\UnlitWhite.vert">
+    <None Include="Assets\Shader\UnlitWhite.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
