@@ -122,7 +122,7 @@ namespace sparkle
 			const auto err = glGetError();
 			if (err != GL_NO_ERROR)
 			{
-				// possibly opengl buffer overfloew, e.g. DrawArrays with too large count
+				// possibly opengl buffer overflow, e.g. DrawArrays with too large count
 				fmt::print("Error(Material::SetFloat): Code #{} in material({})\n", err, this->name);
 			}
 			glUniform1f(GetLocation(name), value);

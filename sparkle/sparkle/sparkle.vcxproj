@@ -106,6 +106,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="SpEngine.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -139,13 +140,14 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="RenderPipeline.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="shader.h" />
     <ClInclude Include="SpEngine.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="utils.h" />

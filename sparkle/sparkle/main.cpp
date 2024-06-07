@@ -38,20 +38,44 @@ namespace sparkle
 			}
 		}
 	};
+
+	class SceneBackpack : public Scene
+	{
+	public:
+		SceneBackpack()
+		{
+			name = "Backpack";
+		}
+
+		void PopulateActors(GameInstance* game)
+		{
+			Scene::SpawnCameraAndLight(game);
+
+			// This is a model with its material defined, so we use that to set the MaterialProperties for this
+			// material when as we load it. No need to specify the defaults here.
+			std::shared_ptr<Material> material = Resource::LoadMaterial("_Default");
+
+			std::shared_ptr<Actor> backpack = game->CreateActor("Backpack");
+			{
+				std::shared_ptr<Model> model = Resource::LoadModel("Assets/backpack/backpack.obj", material);
+				for(auto meshRenderer : model->m_meshRenderers)
+				{
+					backpack->AddComponent(meshRenderer);
+				}
+				backpack->transform->position = glm::vec3(0.0f, 0.0f, 0.0f);
+				backpack->transform->scale = glm::vec3(1.0f);
+			}
+		}
+	};
 }
 
 int main()
 {
-	// TODO Well, it was working and then I removed vcpkg (I thought I didn't need it anymore?)
-	//  but now we can't open assimp files (is it storing them in the vcpkg directory?).
-	//  So, anyways, re-install assimp and then I should have a pretty neat render engine to work with.
-	// vcpkg recommends using it as a submodule, so do that (what I had before, dummy...)
-	// add it, and add it as a submodule.
-
 	auto engine = std::make_unique<sparkle::SpEngine>();
 
 	std::vector<std::shared_ptr<sparkle::Scene>> scenes = {
 		std::make_shared<sparkle::ScenePrimitiveRendering>(),
+		std::make_shared<sparkle::SceneBackpack>(),
 	};
 
 	engine->SetScenes(scenes);

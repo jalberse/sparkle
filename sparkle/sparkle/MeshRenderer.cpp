@@ -63,6 +63,7 @@ namespace sparkle
 		// Material
 		m_material->SetFloat("material.specular", m_material->specular);
 		m_material->SetFloat("material.smoothness", m_material->smoothness);
+
 		m_material->SetTexture("_ShadowTex", Global::game->depthTex());
 
 		if (m_materialProperty.preRendering)

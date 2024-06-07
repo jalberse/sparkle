@@ -4,6 +4,8 @@
 #include "fmt/core.h"
 
 #include <utility>
+#include <optional>
+#include <filesystem>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -12,6 +14,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "Model.h"
 #include "Mesh.h"
 #include "Material.h"
 
@@ -20,6 +23,7 @@ namespace sparkle
 	class Resource
 	{
 	public:
+		// TODO Accept filesystem path instead.
 		static unsigned int LoadTexture(const std::string& path)
 		{
 			if(textureCache.count(path) > 0)
@@ -72,6 +76,14 @@ namespace sparkle
 			return textureID;
 		}
 
+		/// <summary>
+		/// Loads the mesh at the specified path.
+		/// Assumes that the mesh is the first mesh in the scene, and does not load other meshes in the scene.
+		/// Does not load any materials.
+		/// To load all meshes at the path as a single model, use LoadModel().
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		static std::shared_ptr<Mesh> LoadMesh(const std::string& path)
 		{
 			if (meshCache.count(path) > 0)
@@ -79,11 +91,7 @@ namespace sparkle
 				return meshCache[path];
 			}
 
-			std::vector<glm::vec3> vertices;
-			std::vector<glm::vec3> normals;
-			std::vector<glm::vec2> texCoords;
-			std::vector<unsigned int> indices;
-
+			
 			Assimp::Importer importer;
 			const aiScene* scene = importer.ReadFile(defaultMeshPath + path, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 			// check for errors
@@ -97,52 +105,54 @@ namespace sparkle
 					exit(-1);
 				}
 			}
-			aiMesh* mesh = scene->mMeshes[0];
 
-			int drawCount = mesh->mNumVertices;
+			aiMesh* aiMesh = scene->mMeshes[0];
 
-			for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+			std::shared_ptr<Mesh> mesh = ProcessMesh(aiMesh, scene);
+
+			meshCache[path] = mesh;
+			return mesh;
+		}
+		
+		/// <summary>
+		/// Loads a model at the specified path, including its meshes and textures.
+		/// A MeshRenderer is created for each Mesh in the model using the input material,
+		/// Each MeshRenderer's MaterialProperty additionally configured for each mesh where applicable.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		static std::shared_ptr<Model> LoadModel(const std::string& path, const std::shared_ptr<Material>& material)
+		{
+			if (modelCache.count(path) > 0)
 			{
-				// Note that this is a great instance of where Traits would be so great;
-				// in Rust, we can simply implement From<aiVector3D> for glm::vec3.
-				// Here, we don't own glm::vec3 so it's not as if we can implement a ctor for it from aiVector3D.
-				// Helper functions or inlining it here is not as nice.
-
-				// positions
-				vertices.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
-
-				// normals
-				if (mesh->HasNormals())
-				{
-					normals.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
-				}
-				else {
-					fmt::print("Normals not found\n");
-					exit(-1);
-				}
-				// Texture coordinates
-				if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
-				{
-					glm::vec2 texCoord;
-					texCoord.x = mesh->mTextureCoords[0][i].x;
-					texCoord.y = mesh->mTextureCoords[0][i].y;
-					texCoords.push_back(texCoord);
-				}
-				else {
-					texCoords.push_back(glm::vec2(0.0f, 0.0f));
-				}
+				return modelCache[path];
 			}
 
-			for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+			std::filesystem::path p(path);
+			if (!std::filesystem::exists(p))
 			{
-				aiFace face = mesh->mFaces[i];
-				for (unsigned int j = 0; j < face.mNumIndices; j++)
-				{
-					indices.push_back(face.mIndices[j]);
-				}
+				fmt::print("Error(Resource): Model not found at path({})\n", path);
+				exit(-1);
 			}
-			auto result = std::make_shared<Mesh>(std::move(vertices), std::move(normals), std::move(texCoords), std::move(indices));
-			meshCache[path] = result;
+			std::filesystem::path modelDir = p.parent_path();
+
+			std::vector<std::shared_ptr<Mesh>> modelMeshes{};
+			std::vector<std::shared_ptr<MeshRenderer>> meshRenderers{};
+
+			Assimp::Importer importer;
+			const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+			// check for errors
+			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+			{
+				fmt::println("ERROR::ASSIMP::{}", importer.GetErrorString());
+				exit(-1);
+			}
+
+			// process ASSIMP's root node recursively, adding to the modelMeshes and modelMaterials vectors
+			ProcessNode(scene->mRootNode, scene, material, modelMeshes, meshRenderers, modelDir);
+
+			auto result = std::make_shared<Model>(std::move(modelMeshes), std::move(meshRenderers));
+			modelCache[path] = result;
 			return result;
 		}
 
@@ -174,7 +184,7 @@ namespace sparkle
 				exit(-1);
 			}
 
-			std::string geometryCode;
+			std::string geometryCode = "";
 			if (includeGeometryShader)
 			{
 				geometryCode = LoadText(defaultMaterialPath + path + ".geom");
@@ -195,6 +205,10 @@ namespace sparkle
 			return result;
 		}
 
+		/// <summary>
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns>An empty string if loading failed; else the text of the file</returns>
 		static std::string LoadText(const std::string& path)
 		{
 			// 1. retrieve the vertex/fragment source code from filePath
@@ -216,8 +230,7 @@ namespace sparkle
 			}
 			catch (std::ifstream::failure& e)
 			{
-				e;
-				std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
+				return "";
 			}
 			return code;
 		}
@@ -226,13 +239,145 @@ namespace sparkle
 		{
 			textureCache.clear();
 			meshCache.clear();
+			modelCache.clear();
 			materialCache.clear();
 		}
 
 	private:
+		static void ProcessNode(
+			aiNode* node,
+			const aiScene* scene,
+			const std::shared_ptr<Material>& mat,
+			std::vector<std::shared_ptr<Mesh>>& modelMeshes,
+			std::vector<std::shared_ptr<MeshRenderer>>& modelMeshRenderers,
+			const std::filesystem::path& modelDir)
+		{
+			// process all the node's meshes (if any)
+			for (unsigned int i = 0; i < node->mNumMeshes; i++)
+			{
+				aiMesh* aiMesh = scene->mMeshes[node->mMeshes[i]];
+				std::shared_ptr<Mesh> mesh = ProcessMesh(aiMesh, scene);
+				modelMeshes.push_back(mesh);
+
+				std::optional<MaterialProperty> materialProperty = ProcessMeshMaterial(aiMesh, scene, modelDir);
+				MeshRenderer meshRenderer(modelMeshes.back(), mat, true);
+				if (materialProperty.has_value())
+				{
+					meshRenderer.SetMaterialProperty(*materialProperty);
+				}
+				modelMeshRenderers.push_back(std::make_shared<MeshRenderer>(meshRenderer));
+			}
+			// then do the same for each of its children
+			for (unsigned int i = 0; i < node->mNumChildren; i++)
+			{
+				ProcessNode(node->mChildren[i], scene, mat, modelMeshes, modelMeshRenderers, modelDir);
+			}
+		}
+
+		static std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene)
+		{
+			std::vector<glm::vec3> vertices{};
+			std::vector<glm::vec3> normals{};
+			std::vector<glm::vec2> texCoords{};
+			std::vector<unsigned int> indices{};
+			int drawCount = mesh->mNumVertices;
+
+			for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+			{
+				// positions
+				vertices.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
+
+				// normals
+				if (mesh->HasNormals())
+				{
+					normals.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
+				}
+				else {
+					fmt::print("Normals not found\n");
+					exit(-1);
+				}
+				// Texture coordinates
+				if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+				{
+					glm::vec2 texCoord;
+					texCoord.x = mesh->mTextureCoords[0][i].x;
+					texCoord.y = mesh->mTextureCoords[0][i].y;
+					texCoords.push_back(texCoord);
+				}
+				else {
+					texCoords.push_back(glm::vec2(0.0f, 0.0f));
+				}
+			}
+
+			for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+			{
+				aiFace face = mesh->mFaces[i];
+				for (unsigned int j = 0; j < face.mNumIndices; j++)
+				{
+					indices.push_back(face.mIndices[j]);
+				}
+			}
+
+			return std::make_shared<Mesh>(std::move(vertices), std::move(normals), std::move(texCoords), std::move(indices));
+		}
+
+		static std::optional<MaterialProperty> ProcessMeshMaterial(aiMesh* mesh, const aiScene* scene, const std::filesystem::path& modelDir)
+		{
+			if (mesh->mMaterialIndex >= 0)
+			{
+				aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+				std::vector<unsigned int> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, modelDir);
+				std::vector<unsigned int> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, modelDir);
+
+				if (diffuseMaps.size() == 0 && specularMaps.size() == 0)
+				{
+					return {};
+				}
+
+				MaterialProperty materialProperty{};
+				materialProperty.preRendering = [diffuseMaps, specularMaps](Material* mat)
+				{
+					if (diffuseMaps.size() > 0)
+					{
+						mat->SetBool("material.useTexture", true);
+						mat->SetTexture("material.diffuse", diffuseMaps[0]);
+					}
+					if (specularMaps.size() > 0)
+					{
+						// TODO Our shader doesn't use a specular map yet! Add that.
+						// mat->SetBool("material.useTexture", true);
+						// mat->SetTexture("material.specular", specularMaps[0]);
+					}
+				};
+
+				if (diffuseMaps.size() > 1 || specularMaps.size() > 1)
+				{
+					fmt::print("ERROR(Resource): Multiple textures not supported, but multiple found in model loading.\n");
+				}
+
+				return materialProperty;
+			}
+			else return {};
+		}
+
+		static std::vector<unsigned int> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::filesystem::path& modelDir)
+		{
+			std::vector<unsigned int> textures;
+			for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+			{
+				aiString str;
+				mat->GetTexture(type, i, &str);
+				const std::filesystem::path p = modelDir / str.C_Str();
+				unsigned int id = Resource::LoadTexture(p.string());
+				textures.push_back(id);
+			}
+			return textures;
+		}
+
 		static inline std::unordered_map<std::string, unsigned int> textureCache;
 		static inline std::unordered_map<std::string, std::shared_ptr<Mesh>> meshCache;
 		static inline std::unordered_map<std::string, std::shared_ptr<Material>> materialCache;
+		static inline std::unordered_map<std::string, std::shared_ptr<Model>> modelCache;
 
 		static inline std::string defaultTexturePath = "Assets/Texture/";
 		static inline std::string defaultMeshPath = "Assets/Model/";

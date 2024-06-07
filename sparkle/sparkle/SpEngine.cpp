@@ -99,6 +99,8 @@ namespace sparkle
 
 			m_game = std::make_shared<GameInstance>(m_window, m_gui);
 			sceneIndex = m_nextSceneIndex;
+			// TODO Note we're always repopulating each scene from disk, including re-compiling shaders.
+			// This is fine for now, but we should consider caching the compiled shaders (and assets...)
 			scenes[sceneIndex]->PopulateActors(m_game.get());
 			scenes[sceneIndex]->onEnter.Invoke();
 			m_game->Run();
