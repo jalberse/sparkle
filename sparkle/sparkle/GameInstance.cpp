@@ -38,6 +38,20 @@ namespace sparkle
 
 	int GameInstance::Run()
 	{
+		if (true)
+		{
+			fmt::print("Total actors: {}\n", m_actors.size());
+			for (auto actor : m_actors)
+			{
+				fmt::print(" + {}\n", actor->name);
+				for (auto component : actor->components)
+				{
+					fmt::print(" |-- {}\n", component->name);
+				}
+			}
+			fmt::print("\n");
+		}
+
 		Initialize();
 		MainLoop();
 		Finalize();
