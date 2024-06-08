@@ -36,6 +36,24 @@ namespace sparkle
 				sphere->transform->position = glm::vec3(0.6f, 2.0f, 0.0f);
 				sphere->transform->scale = glm::vec3(0.5f);
 			}
+
+			std::shared_ptr<Actor> cube1 = game->CreateActor("Cube1");
+			{
+				auto mesh = Resource::LoadMesh("cube.obj");
+				std::shared_ptr<MeshRenderer> renderer = std::make_shared<MeshRenderer>(mesh, material, true);
+				cube1->AddComponent(renderer);
+				cube1->transform->position = glm::vec3(2.0f, 0.5, 1.0);
+			}
+
+			auto cube2 = game->CreateActor("Cube3");
+			{
+				auto mesh = Resource::LoadMesh("cube.obj");
+				auto renderer = std::make_shared<MeshRenderer>(mesh, material, true);
+				cube2->AddComponent(renderer);
+				cube2->Initialize(glm::vec3(-1.0f, 0.5, 2.0),
+					glm::vec3(0.5f),
+					glm::vec3(60, 0, 60));
+			}
 		}
 	};
 
