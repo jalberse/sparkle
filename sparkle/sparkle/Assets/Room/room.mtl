@@ -1,0 +1,103 @@
+# Blender 3.6.4 MTL File: 'None'
+# www.blender.org
+
+newmtl Arches
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Texture/Arches_Baked.png
+map_Ns Texture/1_Arches_Roughness.png
+map_refl Texture/1_Arches_Metallic.png
+
+newmtl Black
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.034539 0.034539 0.034539
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl Ceiling
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Texture/Ceiling_Baked.png
+map_Ns Texture/1_Ceiling_Roughness.png
+
+newmtl Ceiling_2
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Texture/Ceiling_2_Baked.png
+map_Ns Texture/1_Ceiling_Roughness.png
+
+newmtl Emission
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800614 0.800614 0.800614
+Ks 0.500000 0.500000 0.500000
+Ke 500.000000 314.967743 179.551514
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl Floor
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Texture/Floor_Baked.png
+map_Ns Texture/1_Floor_Roughness.png
+
+newmtl Neon_Lamp
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.485087 0.485087 0.485087
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl Wall_1
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Texture/Wall_1_Baked.png
+map_Ns Texture/1_Wall_1_Roughness.png
+
+newmtl Wall_2
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Texture/Wall_2_Baked.png
+map_Ns Texture/1_Wall_2_Roughness.png
+
+newmtl Window
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Texture/Window_Baked.png
+map_Ns Texture/1_Window_Roughness.png

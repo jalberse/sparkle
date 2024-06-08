@@ -121,7 +121,7 @@ namespace sparkle
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		static std::shared_ptr<Model> LoadModel(const std::string& path, const std::shared_ptr<Material>& material)
+		static std::shared_ptr<Model> LoadModel(const std::string& path, const std::shared_ptr<Material>& material, bool flipUVs = true)
 		{
 			if (modelCache.count(path) > 0)
 			{
@@ -139,8 +139,10 @@ namespace sparkle
 			std::vector<std::shared_ptr<Mesh>> modelMeshes{};
 			std::vector<std::shared_ptr<MeshRenderer>> meshRenderers{};
 
+			unsigned int flipUV = flipUVs ? aiProcess_FlipUVs : 0;
+
 			Assimp::Importer importer;
-			const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+			const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals | flipUV | aiProcess_CalcTangentSpace);
 			// check for errors
 			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 			{

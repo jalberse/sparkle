@@ -85,6 +85,34 @@ namespace sparkle
 			}
 		}
 	};
+
+	class SceneRoom : public Scene
+	{
+	public:
+		SceneRoom()
+		{
+			name = "Room";
+		}
+
+		void PopulateActors(GameInstance* game)
+		{
+			Scene::SpawnCameraAndLight(game);
+
+			auto material = Resource::LoadMaterial("_Default");
+
+			std::shared_ptr<Actor> room = game->CreateActor("Room");
+			{
+				std::shared_ptr<Model> model = Resource::LoadModel("Assets\\Room\\room.obj", material, false);
+				for (auto meshRenderer : model->m_meshRenderers)
+				{
+					room->AddComponent(meshRenderer);
+				}
+
+				room->transform->position = glm::vec3(-5.0f, 0.0f, 15.0f);
+				room->transform->scale = glm::vec3(1.0f);
+			}
+		}
+	};
 }
 
 int main()
@@ -94,6 +122,7 @@ int main()
 	std::vector<std::shared_ptr<sparkle::Scene>> scenes = {
 		std::make_shared<sparkle::ScenePrimitiveRendering>(),
 		std::make_shared<sparkle::SceneBackpack>(),
+		std::make_shared<sparkle::SceneRoom>(),
 	};
 
 	engine->SetScenes(scenes);
