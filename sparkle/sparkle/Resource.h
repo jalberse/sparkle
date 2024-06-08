@@ -237,6 +237,11 @@ namespace sparkle
 
 		static void ClearCache()
 		{
+			for(auto& [key, value] : textureCache)
+			{
+				glDeleteTextures(1, &value);
+			}
+
 			textureCache.clear();
 			meshCache.clear();
 			modelCache.clear();

@@ -78,7 +78,7 @@ namespace sparkle
 
 		// setup members
 		m_gui = std::make_shared<GUI>(m_window);
-		m_input = std::make_shared<Input>(m_window);
+		m_input = std::make_unique<Input>(m_window);
 	}
 
 	SpEngine::~SpEngine()
@@ -96,8 +96,7 @@ namespace sparkle
 	{
 		do {
 			fmt::print("Sparkle Engine\n");
-
-			m_game = std::make_shared<GameInstance>(m_window, m_gui);
+			m_game = std::make_unique<GameInstance>(m_window, m_gui);
 			sceneIndex = m_nextSceneIndex;
 			// TODO Note we're always repopulating each scene from disk, including re-compiling shaders.
 			// This is fine for now, but we should consider caching the compiled shaders (and assets...)

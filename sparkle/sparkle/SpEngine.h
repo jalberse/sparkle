@@ -35,7 +35,7 @@ namespace sparkle
 		unsigned int m_nextSceneIndex = 0;
 		GLFWwindow* m_window = nullptr;
 		std::shared_ptr<GUI> m_gui;
-		std::shared_ptr<GameInstance> m_game;
-		std::shared_ptr<Input> m_input;
+		std::unique_ptr<GameInstance> m_game;
+		std::unique_ptr<Input> m_input;
 	};
 }
